@@ -3,450 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Шпаргалка по Python — от основ к спискам и условиям</title>
-<meta name="description" content="Интерактивная шпаргалка по Python: input/print, модуль random, генераторы списков, условия if/else, циклы for, индексы и f-строки.">
+<title>Шпаргалка по Python</title>
 <style>
-  :root {
-    --bg: #0d1220;
-    --card: #141b2d;
-    --card-2: #1a2338;
-    --border: #263352;
-    --text: #e9edf6;
-    --muted: #9aa8c2;
-    --blue: #4b8bbe;
-    --blue-soft: #6fb3e0;
-    --yellow: #ffd43b;
-    --green: #4ade80;
-    --code-bg: #0b0f1a;
-    --radius: 16px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
   body {
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background:
-      radial-gradient(1000px 500px at 15% -10%, rgba(75,139,190,.18), transparent 60%),
-      radial-gradient(900px 450px at 95% 0%, rgba(255,212,59,.09), transparent 55%),
-      var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222;
+    background: #fff;
+    line-height: 1.5;
+    margin: 0;
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px 64px; }
-
-  /* ---------- Header ---------- */
-  header { text-align: center; margin-bottom: 28px; }
-  .logo { font-size: 56px; line-height: 1; display: inline-block; filter: drop-shadow(0 6px 18px rgba(75,139,190,.45)); }
-  h1 {
-    font-size: clamp(30px, 5vw, 44px);
-    font-weight: 800;
-    letter-spacing: -.5px;
-    margin-top: 10px;
-    background: linear-gradient(92deg, #7cc0ee 0%, var(--yellow) 90%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .subtitle { color: var(--muted); font-size: clamp(15px, 2.5vw, 18px); margin-top: 8px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
-  .chip {
-    font-size: 13px; color: var(--blue-soft);
-    background: rgba(75,139,190,.12);
-    border: 1px solid rgba(75,139,190,.35);
-    padding: 4px 12px; border-radius: 999px; white-space: nowrap;
-  }
-
-  /* ---------- Toolbar ---------- */
-  .toolbar {
-    position: sticky; top: 0; z-index: 10;
-    display: flex; gap: 10px; justify-content: flex-end;
-    padding: 12px 0;
-    margin-bottom: 8px;
-    background: linear-gradient(to bottom, var(--bg) 75%, transparent);
-  }
-  .toolbar button {
-    font: inherit; font-size: 14px;
-    color: var(--text);
-    background: var(--card-2);
-    border: 1px solid var(--border);
-    padding: 7px 14px; border-radius: 10px;
-    cursor: pointer;
-    transition: border-color .15s, background .15s, transform .1s;
-  }
-  .toolbar button:hover { border-color: var(--blue); background: #1f2a45; }
-  .toolbar button:active { transform: scale(.97); }
-
-  /* ---------- Sections (details) ---------- */
-  section.topic {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 14px;
-    overflow: hidden;
-    transition: border-color .2s;
-  }
-  section.topic:hover { border-color: #33436e; }
-  section.topic[open] { border-color: rgba(75,139,190,.55); box-shadow: 0 8px 30px rgba(0,0,0,.25); }
-  summary {
-    list-style: none;
-    display: flex; align-items: center; gap: 14px;
-    padding: 18px 20px;
-    cursor: pointer;
-    user-select: none;
-  }
-  summary::-webkit-details-marker { display: none; }
-  .num {
-    flex: none;
-    width: 40px; height: 40px; border-radius: 12px;
-    display: grid; place-items: center;
-    font-weight: 700; font-size: 17px; color: #0d1220;
-    background: linear-gradient(135deg, var(--yellow), #ffb347);
-  }
-  .sum-title { font-size: clamp(16px, 2.6vw, 19px); font-weight: 700; }
-  .sum-sub { display: block; font-size: 13px; font-weight: 400; color: var(--muted); margin-top: 1px; }
-  .arrow {
-    margin-left: auto; flex: none;
-    width: 22px; height: 22px;
-    border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
-    transform: rotate(45deg);
-    transition: transform .25s, border-color .2s;
-    margin-right: 6px;
-  }
-  details[open] .arrow { transform: rotate(-135deg); border-color: var(--yellow); }
-  .body {
-    padding: 4px 20px 20px;
-    border-top: 1px dashed var(--border);
-    animation: reveal .25s ease;
-  }
-  @keyframes reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-  .intro { color: var(--muted); font-size: 15px; padding: 14px 2px 6px; }
-
-  /* ---------- Sub-topics ---------- */
-  .item { margin-top: 18px; }
-  .item h3 {
-    font-size: 16px; font-weight: 700;
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 8px;
-  }
-  .item h3 .dot { color: var(--yellow); }
-
-  .code { position: relative; margin: 10px 0 12px; }
-  pre {
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 96px 14px 16px;
-    overflow-x: auto;
-    font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace;
-    font-size: 14px;
-    line-height: 1.55;
-  }
-  code .k { color: #ff7ab2; }            /* keywords */
-  code .s { color: #a5d67d; }            /* strings */
-  code .n { color: #f0b86e; }            /* numbers */
-  code .b { color: #6fb3e0; }            /* builtins */
-  code .c { color: #6b7a99; font-style: italic; } /* comments */
-
-  .copy {
-    position: absolute; top: 9px; right: 9px;
-    font: inherit; font-size: 12px;
-    color: var(--muted);
-    background: var(--card-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: color .15s, border-color .15s;
-  }
-  .copy:hover { color: var(--text); border-color: var(--blue); }
-  .copy.ok { color: var(--green); border-color: var(--green); }
-
-  .hint {
-    display: flex; gap: 10px;
-    background: rgba(255,212,59,.07);
-    border-left: 3px solid var(--yellow);
-    border-radius: 0 10px 10px 0;
-    padding: 10px 14px;
-    font-size: 14px; color: #d9dfec;
-  }
-  .hint b { color: var(--yellow); font-weight: 600; }
-  p code, .hint code, li code {
-    background: var(--card-2);
-    border: 1px solid var(--border);
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  .subtitle { color: #666; margin: 0 0 24px; }
+  details {
+    border: 1px solid #ddd;
     border-radius: 6px;
-    padding: 1px 6px;
-    font-family: ui-monospace, Consolas, monospace;
-    font-size: 13px;
-    color: #a5d67d;
-    white-space: nowrap;
+    padding: 10px 14px;
+    margin-bottom: 10px;
   }
-  ul.props { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 4px; }
-  ul.props li {
-    background: var(--card-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 14px;
+  summary { font-weight: bold; cursor: pointer; }
+  .intro { color: #666; margin: 10px 0 0; }
+  .item { margin-top: 16px; }
+  .item h3 { font-size: 16px; margin: 0 0 8px; }
+  pre {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 10px 12px;
+    overflow-x: auto;
+    font-family: Consolas, "Courier New", monospace;
     font-size: 14px;
+    margin: 0 0 8px;
   }
-
+  code { font-family: Consolas, "Courier New", monospace; }
+  p code, li code { background: #f0f0f0; padding: 0 4px; border-radius: 3px; font-size: 13px; }
+  .how { color: #444; font-size: 14px; margin: 0; }
+  ul.props { margin: 4px 0 8px; padding-left: 22px; }
+  ul.props li { margin-bottom: 4px; }
   footer {
-    margin-top: 40px; text-align: center;
-    color: var(--muted); font-size: 14px;
-  }
-  footer .quote {
-    font-size: 16px; color: var(--text);
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px 22px;
-    margin-bottom: 18px;
-  }
-  footer .quote b { color: var(--yellow); }
-  footer a { color: var(--blue-soft); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
-  @media (max-width: 560px) {
-    pre { padding-right: 16px; padding-top: 40px; }
-    .copy { top: 8px; right: 8px; }
+    margin-top: 28px;
+    color: #666;
+    font-size: 14px;
+    border-top: 1px solid #eee;
+    padding-top: 14px;
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
-    <span class="logo">🐍</span>
-    <h1>Шпаргалка по Python</h1>
-    <p class="subtitle">От основ — к спискам и условиям</p>
-    <div class="chips">
-      <span class="chip">📚 6 тем</span>
-      <span class="chip">⚡ 12 приёмов</span>
-      <span class="chip">🎯 школьные задачи на массивы и условия</span>
-    </div>
-  </header>
+<h1>Шпаргалка по Python</h1>
+<p class="subtitle">От основ к спискам и условиям</p>
 
-  <div class="toolbar">
-    <button id="expandAll" type="button">Развернуть всё</button>
-    <button id="collapseAll" type="button">Свернуть всё</button>
+<details>
+  <summary>1. Ввод и вывод данных (input и print)</summary>
+  <p class="intro">Позволяет общаться с пользователем: запрашивать данные и выводить результат на экран.</p>
+
+  <div class="item">
+    <h3>Ввод целого числа</h3>
+    <pre><code>n = int(input("Введите число: "))</code></pre>
+    <p class="how"><b>Как использовать:</b> функция <code>input()</code> ждёт ввода текста от пользователя в терминале. Обёртка <code>int()</code> превращает этот текст в целое число, чтобы с ним можно было производить математические операции.</p>
   </div>
 
-  <!-- 1 -->
-  <section class="topic">
-    <details>
-      <summary>
-        <span class="num">1</span>
-        <span class="sum-title">Ввод и вывод данных<span class="sum-sub">input и print</span></span>
-        <span class="arrow"></span>
-      </summary>
-      <div class="body">
-        <p class="intro">Позволяет общаться с пользователем: запрашивать данные и выводить результат на экран.</p>
+  <div class="item">
+    <h3>Красивый вывод массива (распаковка)</h3>
+    <pre><code>a = [5, 8, 12, 3]
+print(*a)</code></pre>
+    <p class="how"><b>Как использовать:</b> звёздочка <code>*</code> перед именем списка распаковывает его элементы. Python выводит их в одну строчку через пробел, убирая квадратные скобки и запятые.</p>
+  </div>
+</details>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Ввод целого числа</h3>
-          <div class="code"><pre><code>n = int(input("Введите число: "))</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> функция <code>input()</code> ждёт ввода текста от пользователя в терминале. Обёртка <code>int()</code> превращает этот текст в целое число, чтобы с ним можно было производить математические операции.</span></div>
-        </div>
+<details>
+  <summary>2. Модуль random (генерация случайных чисел)</summary>
+  <p class="intro">Нужен везде, где требуется создать случайные данные: оценки, погода, числа для тестов.</p>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Красивый вывод массива (распаковка)</h3>
-          <div class="code"><pre><code>a = [5, 8, 12, 3]
-print(*a)</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> звёздочка <code>*</code> перед именем списка распаковывает его элементы. Python выводит их в одну строчку через пробел, убирая квадратные скобки и запятые.</span></div>
-        </div>
-      </div>
-    </details>
-  </section>
+  <div class="item">
+    <h3>Подключение модуля</h3>
+    <pre><code>import random</code></pre>
+  </div>
 
-  <!-- 2 -->
-  <section class="topic">
-    <details>
-      <summary>
-        <span class="num">2</span>
-        <span class="sum-title">Модуль random<span class="sum-sub">генерация случайных чисел</span></span>
-        <span class="arrow"></span>
-      </summary>
-      <div class="body">
-        <p class="intro">Нужен везде, где требуется создать случайные данные: оценки, погода, числа для тестов.</p>
+  <div class="item">
+    <h3>Генерация одного случайного числа</h3>
+    <pre><code>x = random.randint(-30, 30)</code></pre>
+    <p class="how"><b>Как использовать:</b> создаёт случайное целое число в диапазоне от min до max включительно (в примере — от -30 до 30).</p>
+  </div>
+</details>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Подключение модуля</h3>
-          <div class="code"><pre><code>import random</code></pre><button class="copy" type="button">Копировать</button></div>
-        </div>
+<details>
+  <summary>3. Генераторы списков (list comprehensions)</summary>
+  <p class="intro">Самый мощный и питонистичный способ создавать массивы в одну строчку.</p>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Генерация одного случайного числа</h3>
-          <div class="code"><pre><code>x = random.randint(-30, 30)</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> создаёт случайное целое число в диапазоне от min до max включительно (в примере — от −30 до 30).</span></div>
-        </div>
-      </div>
-    </details>
-  </section>
+  <div class="item">
+    <h3>Массив фиксированного размера со случайными числами</h3>
+    <pre><code>a = [random.randint(1, 10) for _ in range(25)]</code></pre>
+    <p class="how"><b>Как использовать:</b> цикл <code>for _ in range(25)</code> повторяет действие 25 раз. На каждом шаге создаётся случайное число и записывается в список <code>a</code>. Подчёркивание <code>_</code> используется вместо переменной, когда её значение внутри цикла нам не нужно.</p>
+  </div>
 
-  <!-- 3 -->
-  <section class="topic">
-    <details>
-      <summary>
-        <span class="num">3</span>
-        <span class="sum-title">Генераторы списков<span class="sum-sub">list comprehensions</span></span>
-        <span class="arrow"></span>
-      </summary>
-      <div class="body">
-        <p class="intro">Самый мощный и питонистичный способ создавать массивы в одну строчку.</p>
+  <div class="item">
+    <h3>Фильтрация элементов (создание нового списка по условию)</h3>
+    <pre><code>b = [x for x in a if x % 2 == 0]</code></pre>
+    <p class="how"><b>Как использовать:</b> берёт каждый элемент <code>x</code> из списка <code>a</code>, проверяет условие (<code>if x % 2 == 0</code> — на чётность) и, если оно истинно, добавляет элемент в новый список <code>b</code>.</p>
+  </div>
+</details>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Массив фиксированного размера со случайными числами</h3>
-          <div class="code"><pre><code>a = [random.randint(1, 10) for _ in range(25)]</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> цикл <code>for _ in range(25)</code> повторяет действие 25 раз. На каждом шаге создаётся случайное число и записывается в список <code>a</code>. Подчёркивание <code>_</code> используется вместо переменной, когда её значение внутри цикла нам не нужно.</span></div>
-        </div>
+<details>
+  <summary>4. Условия (if, else)</summary>
+  <p class="intro">Помогают программе принимать решения в зависимости от данных.</p>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Фильтрация элементов (новый список по условию)</h3>
-          <div class="code"><pre><code>b = [x for x in a if x % 2 == 0]</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> берёт каждый элемент <code>x</code> из списка <code>a</code>, проверяет условие (<code>if x % 2 == 0</code> — на чётность) и, если оно истинно, добавляет элемент в новый список <code>b</code>.</span></div>
-        </div>
-      </div>
-    </details>
-  </section>
-
-  <!-- 4 -->
-  <section class="topic">
-    <details>
-      <summary>
-        <span class="num">4</span>
-        <span class="sum-title">Условия<span class="sum-sub">if и else</span></span>
-        <span class="arrow"></span>
-      </summary>
-      <div class="body">
-        <p class="intro">Помогают программе принимать решения в зависимости от данных.</p>
-
-        <div class="item">
-          <h3><span class="dot">▸</span> Проверка на чётность</h3>
-          <div class="code"><pre><code>if x % 2 == 0:
+  <div class="item">
+    <h3>Проверка на чётность</h3>
+    <pre><code>if x % 2 == 0:
     print("Чётное")
 else:
-    print("Нечётное")</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> оператор <code>%</code> находит остаток от деления. Если остаток от деления на 2 равен нулю (<code>== 0</code>), то число чётное.</span></div>
-        </div>
+    print("Нечётное")</code></pre>
+    <p class="how"><b>Как использовать:</b> оператор <code>%</code> находит остаток от деления. Если остаток от деления на 2 равен нулю (<code>== 0</code>), то число чётное.</p>
+  </div>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Проверка диапазона (хорошие отметки)</h3>
-          <div class="code"><pre><code>if x &gt;= 7:
-    count += 1</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> проверяет, больше или равно число семи (включает 7, 8, 9, 10).</span></div>
-        </div>
-      </div>
-    </details>
-  </section>
+  <div class="item">
+    <h3>Проверка диапазона (хорошие отметки)</h3>
+    <pre><code>if x &gt;= 7:
+    count += 1</code></pre>
+    <p class="how"><b>Как использовать:</b> проверяет, больше или равно число семи (включает 7, 8, 9, 10).</p>
+  </div>
+</details>
 
-  <!-- 5 -->
-  <section class="topic">
-    <details>
-      <summary>
-        <span class="num">5</span>
-        <span class="sum-title">Циклы<span class="sum-sub">for</span></span>
-        <span class="arrow"></span>
-      </summary>
-      <div class="body">
-        <p class="intro">Используются для перебора элементов в списках или диапазонах.</p>
+<details>
+  <summary>5. Циклы (for)</summary>
+  <p class="intro">Используются для перебора элементов в списках или диапазонах.</p>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Перебор элементов по значению</h3>
-          <div class="code"><pre><code>for x in a:
-    print(x)</code></pre><button class="copy" type="button">Копировать</button></div>
-        </div>
+  <div class="item">
+    <h3>Перебор элементов по значению</h3>
+    <pre><code>for x in a:
+    print(x)</code></pre>
+  </div>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Перебор по индексам (когда нужен номер дня/элемента)</h3>
-          <div class="code"><pre><code>for i in range(len(a)):
-    print(f"День {i + 1}: осадки {a[i]} мм")</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> <code>len(a)</code> узнаёт длину списка. <code>range()</code> создаёт последовательность индексов от 0 до <code>len(a) - 1</code>. Поскольку индексация в Python начинается с нуля, чтобы получить привычный номер дня (с 1), мы пишем <code>i + 1</code>.</span></div>
-        </div>
-      </div>
-    </details>
-  </section>
+  <div class="item">
+    <h3>Перебор по индексам (когда нужен номер дня или элемента)</h3>
+    <pre><code>for i in range(len(a)):
+    print(f"День {i + 1}: осадки {a[i]} мм")</code></pre>
+    <p class="how"><b>Как использовать:</b> <code>len(a)</code> узнаёт длину списка. <code>range()</code> создаёт последовательность индексов от 0 до <code>len(a) - 1</code>. Поскольку индексация в Python начинается с нуля, чтобы получить привычный номер дня (с 1), мы пишем <code>i + 1</code>.</p>
+  </div>
+</details>
 
-  <!-- 6 -->
-  <section class="topic">
-    <details>
-      <summary>
-        <span class="num">6</span>
-        <span class="sum-title">Индексы и срезы<span class="sum-sub">и f-строки</span></span>
-        <span class="arrow"></span>
-      </summary>
-      <div class="body">
-        <p class="intro">Быстрый доступ к элементам списка и подстановка значений в текст.</p>
+<details>
+  <summary>6. Работа с индексами и срезами</summary>
+  <p class="intro">Первый и последний элемент списка, форматированные строки.</p>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Первый и последний элемент списка</h3>
-          <ul class="props">
-            <li>Первый элемент: <code>b[0]</code></li>
-            <li>Последний элемент: <code>b[-1]</code> — отрицательные индексы считают с конца</li>
-          </ul>
-        </div>
+  <div class="item">
+    <h3>Первый и последний элемент</h3>
+    <ul class="props">
+      <li>Первый элемент списка: <code>b[0]</code></li>
+      <li>Последний элемент списка: <code>b[-1]</code> (отрицательные индексы в Python считают с конца)</li>
+    </ul>
+  </div>
 
-        <div class="item">
-          <h3><span class="dot">▸</span> Форматированные строки (f-строки)</h3>
-          <div class="code"><pre><code>print(f"{i + 1} сентября")</code></pre><button class="copy" type="button">Копировать</button></div>
-          <div class="hint"><span>💡</span><span><b>Как использовать:</b> буква <code>f</code> перед строкой позволяет вставлять любые переменные или выражения прямо внутрь текста с помощью фигурных скобок <code>{}</code>.</span></div>
-        </div>
-      </div>
-    </details>
-  </section>
+  <div class="item">
+    <h3>Форматированные строки (f-строки)</h3>
+    <pre><code>print(f"{i + 1} сентября")</code></pre>
+    <p class="how"><b>Как использовать:</b> буква <code>f</code> перед строкой позволяет вставлять любые переменные или выражения прямо внутрь текста с помощью фигурных скобок <code>{}</code>.</p>
+  </div>
+</details>
 
-  <footer>
-    <div class="quote">✨ С таким набором можно решить практически <b>любую школьную задачу</b> на массивы и условия!</div>
-    <p>Размещено на GitHub Pages · <a href="https://pages.github.com" target="_blank" rel="noopener">как это работает</a></p>
-  </footer>
+<footer>
+  <p>С таким набором можно решить практически любую школьную задачу на массивы и условия.</p>
+</footer>
 
 </div>
-
-<script>
-  // --- простая подсветка синтаксиса Python ---
-  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const RE = /(#[^\n]*)|((?:[frbu]{0,2})"(?:\\.|[^"\\\n])*"|(?:[frbu]{0,2})'(?:\\.|[^'\\\n])*')|\b(import|from|as|for|in|if|elif|else|while|def|return|and|or|not|is|None|True|False|pass|break|continue)\b|\b(print|input|int|str|float|len|range|list|dict|sum|min|max|random|randint)\b|(\b\d+(?:\.\d+)?\b)/g;
-  document.querySelectorAll('pre code').forEach(el => {
-    el.innerHTML = esc(el.textContent).replace(RE, (m, c, s, k, b, n) => {
-      if (c) return '<span class="c">' + c + '</span>';
-      if (s) return '<span class="s">' + s + '</span>';
-      if (k) return '<span class="k">' + k + '</span>';
-      if (b) return '<span class="b">' + b + '</span>';
-      if (n) return '<span class="n">' + n + '</span>';
-      return m;
-    });
-  });
-
-  // --- кнопки копирования ---
-  document.querySelectorAll('.copy').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const text = btn.parentElement.querySelector('pre').innerText;
-      const done = () => {
-        btn.textContent = 'Скопировано ✓';
-        btn.classList.add('ok');
-        setTimeout(() => { btn.textContent = 'Копировать'; btn.classList.remove('ok'); }, 1600);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done).catch(() => fallback(text, done));
-      } else {
-        fallback(text, done);
-      }
-    });
-  });
-  function fallback(text, done) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); done(); } catch (e) {}
-    document.body.removeChild(ta);
-  }
-
-  // --- развернуть / свернуть всё ---
-  const topics = document.querySelectorAll('section.topic details');
-  document.getElementById('expandAll').addEventListener('click', () =>
-    topics.forEach(d => d.open = true));
-  document.getElementById('collapseAll').addEventListener('click', () =>
-    topics.forEach(d => d.open = false));
-</script>
 </body>
 </html>
